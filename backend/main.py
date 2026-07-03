@@ -46,6 +46,22 @@ def validate_url(url: str) -> None:
         raise HTTPException(status_code=400, detail="URL YouTube non valido")
 
 
+COOKIES_FILE = os.environ.get("YTDLP_COOKIES_FILE", "/etc/secrets/cookies.txt")
+
+
+def base_ydl_opts() -> dict:
+    opts = {
+        "quiet": True,
+        "noplaylist": True,
+        # L'IP dei provider cloud viene spesso classificato come "bot" da YouTube;
+        # spoofare il client Android riduce la frequenza del blocco "Sign in to confirm".
+        "extractor_args": {"youtube": {"player_client": ["android", "web"]}},
+    }
+    if os.path.exists(COOKIES_FILE):
+        opts["cookiefile"] = COOKIES_FILE
+    return opts
+
+
 @app.get("/api/health")
 def health():
     return {"status": "ok"}
@@ -55,7 +71,7 @@ def health():
 @limiter.limit("30/hour")
 def info(request: Request, url: str):
     validate_url(url)
-    ydl_opts = {"quiet": True, "skip_download": True, "noplaylist": True}
+    ydl_opts = {**base_ydl_opts(), "skip_download": True}
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             data = ydl.extract_info(url, download=False)
@@ -83,22 +99,20 @@ def download(request: Request, url: str, quality: str = "720"):
 
     if quality == "audio":
         ydl_opts = {
+            **base_ydl_opts(),
             "outtmpl": outtmpl,
             "format": "bestaudio/best",
             "postprocessors": [
                 {"key": "FFmpegExtractAudio", "preferredcodec": "mp3", "preferredquality": "192"}
             ],
-            "quiet": True,
-            "noplaylist": True,
         }
         media_type = "audio/mpeg"
     else:
         ydl_opts = {
+            **base_ydl_opts(),
             "outtmpl": outtmpl,
             "format": QUALITY_FORMATS[quality],
             "merge_output_format": "mp4",
-            "quiet": True,
-            "noplaylist": True,
         }
         media_type = "video/mp4"
 
