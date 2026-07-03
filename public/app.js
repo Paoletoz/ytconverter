@@ -1,4 +1,4 @@
-const API_BASE = "https://ytconverter-backend.onrender.com";
+const API_BASE = "https://ytconverter-mgzd.onrender.com";
 
 const form = document.getElementById("form");
 const urlInput = document.getElementById("url");
