@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YT Converter</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="card">
+    <h1>YT Converter</h1>
+    <p class="subtitle">Incolla il link di un video YouTube (uso personale)</p>
+
+    <form id="form">
+      <input type="url" id="url" placeholder="https://www.youtube.com/watch?v=..." required />
+      <button type="submit" id="analyzeBtn">Analizza</button>
+    </form>
+
+    <div id="status" class="status"></div>
+
+    <div id="result" class="result hidden">
+      <img id="thumb" alt="thumbnail" />
+      <div class="info">
+        <h2 id="title"></h2>
+        <p id="meta"></p>
+        <div class="options">
+          <button class="quality" data-quality="1080">1080p MP4</button>
+          <button class="quality" data-quality="720">720p MP4</button>
+          <button class="quality" data-quality="480">480p MP4</button>
+          <button class="quality" data-quality="audio">Solo audio (MP3)</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
